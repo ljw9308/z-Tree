@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>Document</title>
+		<!--  ztree 引入文件  -->
+		<link rel="stylesheet" href="css/zTreeStyle/zTreeStyle.css" type="text/css">
+		<script type="text/javascript" src="js/jquery-1.11.3.js"></script>
+		<script type="text/javascript" src="js/jquery.ztree.core.js"></script>
+		<script type="text/javascript" src="js/jquery.ztree.excheck.js"></script>
+		<script type="text/javascript" src="js/jquery.ztree.exedit.js"></script>
+	</head>
+
+	<body>
+		<div class="zTreeDemoBackground">
+			<ul id="treeModal" class="ztree"></ul>
+		</div>
+	</body>
+	<script>
+		/*****  新增的树状图  *****/
+		var zTreeopt = {};
+		(function() {
+			//文件树的配置项
+			var setting = {
+				async: {
+					enable: false,
+					url: getUrl,
+					contentType: "application/json",
+					autoParam: ["id=inskey"],   //向后台传值{inskey:10}
+					dataType: "json"
+				},
+				check: {
+					enable: true
+				},
+				data: {
+					simpleData: {
+						enable: true,
+						idKey: "id",
+						pIdKey: "pid",
+						rootPId: 0,
+						children: "nodes"
+					}
+				},
+				view: {
+					expandSpeed: "",
+					selectedMulti: true,
+					showLine: false
+				},
+				callback: {
+					beforeExpand: beforeExpand, //展开父节点的回调
+					onAsyncSuccess: onAsyncSuccess, //ajax  的成功回调
+					onAsyncError: onAsyncError, //ajax  的失败回调
+					onNodeCreated: zTreeOnNodeCreated //用于捕获节点生成 DOM 后的事件回调函数
+				}
+			};
+
+			// 父节点展开之前的事件回调函数    
+			function beforeExpand(treeId, treeNode) {
+				var treeObj = $.fn.zTree.getZTreeObj("treeModal");
+				//mfType  1:行业   2:目录   3:表
+				//行业和表    开启异步ajax   
+				if((treeNode.mfType == 1 || treeNode.mfType == 3) && treeNode.isAjaxed != 1) {
+					treeObj.setting.async.enable = true;
+					setLoad(treeNode, "refresh");
+				} else {
+					//关闭异步ajax	
+					treeObj.setting.async.enable = false
+				}
+			};
+
+			//		  获取 url的方法
+			function getUrl(treeId, treeNode) {
+				var type = Number(treeNode.mfType)
+				var treeUrl = '';
+				switch(type) {
+					case 1:
+						treeUrl = 'asyncData/json/selectFolderTreeByInSkey.json';
+						break;
+					case 3:
+						treeUrl = 'asyncData/json/selectTabelFildTree.json';
+						break;
+				};
+				return treeUrl;
+			}
+			//		ajax 成功的回调函数 
+			function onAsyncSuccess(event, treeId, treeNode, msg) {
+				var zTree = $.fn.zTree.getZTreeObj("treeModal");
+				treeNode.isAjaxed = true;
+				treeNode.icon = "";
+				zTree.updateNode(treeNode);
+
+			};
+			//		ajax 失败的回调函数 
+			function onAsyncError(event, treeId, treeNode, XMLHttpRequest, textStatus, errorThrown) {
+
+				var zTree = $.fn.zTree.getZTreeObj("treeModal");
+				treeNode.icon = "";
+				zTree.updateNode(treeNode);
+			}
+			//		ajax load加载效果
+			function setLoad(treeNode, reloadType) {
+				var zTree = $.fn.zTree.getZTreeObj("treeModal");
+				if(reloadType == "refresh") {
+					treeNode.icon = "css/zTreeStyle/img/loading.gif";
+					zTree.updateNode(treeNode);
+				}
+			}
+			//      用于捕获节点生成 DOM 后的事件回调函数
+			function zTreeOnNodeCreated(event, treeId, treeNode) {
+
+				var zTree = $.fn.zTree.getZTreeObj("treeModal");
+				var mftype = treeNode.mfType;
+				var icoPic = '';
+				switch(mftype) {
+					case 1: //根元素的图标
+						icoPic = 'css/zTreeStyle/img/diy/1_open.png';
+						break;
+					case 3: //表格的图标
+						icoPic = 'css/zTreeStyle/img/diy/8.png';
+						break;
+					case 4: //年份元素的图标
+						icoPic = 'css/zTreeStyle/img/diy/4.png';
+						break;
+					case 5: //地区的图标
+						icoPic = 'css/zTreeStyle/img/diy/10.png';
+						break;
+				};
+				treeNode.icon = icoPic; //默认图标
+				treeNode.iconOpen = icoPic; //展开的图标
+				treeNode.iconClose = icoPic; //关闭的图标
+				zTree.updateNode(treeNode); //更新节点
+			};
+			//输出  zTreeopt对象
+			zTreeopt = {
+				setting: setting
+			};
+		})();
+
+		//加载文件树的行业   
+		function zTreeLoad() {
+			$.ajax({
+				type: "get",
+				url: "asyncData/json/selectIndustryTree.json",
+				//			contentType: 'application/json',
+				dataType: "json",
+				async: false,
+				error: function() {
+					window.wxc.xcConfirm("加载错误", "error")
+					return;
+				},
+				success: function(data) {
+					//zTree  文件树
+					$.fn.zTree.init($("#treeModal"), zTreeopt.setting, data);
+				}
+			})
+		};
+		zTreeLoad()
+	</script>
+
+</html>

@@ -1,0 +1,21 @@
+[
+	{
+		"checked": false,
+		"id": 43,
+		"isOrg": null,
+		"isParent": true,
+		"mfType": 1,
+		"name": "社保",
+		"open": false,
+		"pid": 0
+	}, {
+		"checked": false,
+		"id": 40,
+		"isOrg": null,
+		"isParent": true,
+		"mfType": 1,
+		"name": "财政行业",
+		"open": false,
+		"pid": 0
+	}
+]

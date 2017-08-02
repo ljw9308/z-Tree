@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<!--  ztree 引入文件  -->
+		<link rel="stylesheet" href="css/zTreeStyle/zTreeStyle.css" type="text/css">
+		<script type="text/javascript" src="js/jquery-1.11.3.js"></script>
+		<script type="text/javascript" src="js/jquery.ztree.core.js"></script>
+		<script type="text/javascript" src="js/jquery.ztree.excheck.js"></script>
+		<script type="text/javascript" src="js/jquery.ztree.exedit.js"></script>
+		<title>Document</title>
+		<style>
+			.menu_item {
+				width: 120px;
+				/*height: 60px;*/
+				border: 1px solid #999;
+				line-height: 36px;
+				text-align: left;
+				display: none;
+				position: absolute;
+				background: #F2F2F2;
+				font-size: 12px;
+			}
+			
+			.menu_item p {
+				height: 30px;
+				line-height: 30px;
+				margin: 0;
+				padding: 0 14px;
+				cursor: pointer;
+			}
+			
+			.menu_item p:hover {
+				background: #0088CC;
+				color: #fff;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<!--  ztree 的文件树       -->
+		<div class="zTreeDemoBackground">
+			<ul id="treeRoot" class="ztree"></ul>
+		</div>
+
+		<!--鼠标右键菜单-->
+		<div id="kuai" class="menu_item" style="width:145px">
+			<!--<p>新建</p><img src="img/next.png" style="display:inline;position:absolute;top:6px;right:4px" class="menu_next_btn">-->
+			<p id="flexible">新建灵活分析报表</p>
+			<p id="Multidimensional">新建多维分析报表</p>
+			<p id="Meter">新建仪表分析报表</p>
+			<p id="perspectiveAnalysis">新建透视分析报表</p>
+		</div>
+
+		<div id="kuai2" class="menu_item" style="width:100px">
+			<!-- <p>新建</p><img src="img/next.png" style="display:inline;position:absolute;top:6px;right:4px" class="menu_next_btn"> -->
+			<p id="menu_modify">修改</p>
+			<p id="menu_check">查看</p>
+			<!--<p id="delete">删除</p>-->
+			<p id="menu_submitModal">模型提交</p>
+		</div>
+	</body>
+	<script>
+	   
+	    //财政行业和社保是动态创建的   分别每一个下边挂一个tree      
+		/******  Ztree树的默认加载     *****/
+		//设置配置项
+		var setting = {
+			view: {
+				blClickExpand: true, //双击父节点展开
+				showLine: false, //是否显示线条
+			},
+			//		async: {
+			//			enable: true,
+			//			type: "post",
+			//			url: "http://host/getNode.php",
+			//			contentType: "application/json",
+			//			dataType: "json",
+			//			otherParam: { "id":"1", "name":"test"},
+			//			autoParam: ["id"]
+			//		},
+			callback: {
+				//			onClick: zTreeOnClick,   //单机事件
+				onRightClick: zTreeOnRightClick, //右键事件
+				onDblClick: zTreeOnDblClick
+			},
+			data: {
+				simpleData: {
+					enable: true,
+					idKey: "id",
+					pIdKey: "pid",
+					rootPId: 0
+				}
+			}
+		};
+
+		//社保和财政行业的默认加载;
+		function zTreeload() {
+
+			//			$.get("asyncData/json/selectFolderTreeByInSkey.json",
+			//				function(data) {
+			//					zNodesRoot = data;
+			//					template(data);
+			//				},
+			//				"json");
+			var data = [{
+				"dbname": "NoMoneySystemDB",
+				"industryDataInfo": null,
+				"industryFolderInfo": null,
+				"inmemo": "6-25-数据源-01",
+				"inname": "财政行业",
+				"orderindex": 10,
+				"pageNum": null,
+				"skey": 40,
+				"sloginname": "AuditAnalysis",
+				"sname": "182.92.174.186",
+				"spwd": "AuditAnalysis",
+				"start": null
+			}, {
+				"dbname": "AuditAnalysis",
+				"industryDataInfo": null,
+				"industryFolderInfo": null,
+				"inmemo": "",
+				"inname": "社保",
+				"orderindex": 2,
+				"pageNum": null,
+				"skey": 43,
+				"sloginname": "sa",
+				"sname": "1.119.49.60",
+				"spwd": "Louddt2016",
+				"start": null
+			}]
+			template(data);
+
+			function template(data) {
+				$('#treeRoot').empty();
+				var html = '';
+				for(var i = 0; i < data.length; i++) {
+					html += '<li id="" class="levelRoot" hidefocus="false" treenode="">';
+					html += '<span id="treeRoot_1_switch" title="" class="button switch noline_close"></span>';
+					html += '<a id="treeRoot_1_a" class="treeA" target="_blank" data-skey="' + data[i].skey + '" title="' + data[i].inname + '">';
+					html += '<span id="treeRoot_1_ico" title="" treenode_ico="" class="button ico_close"></span>';
+					html += '<span id="treeRoot_1_span" class="node_name">' + data[i].inname + '</span></a>';
+
+					html += '<div class="zTreeDemoBackground" style="display:none">';
+					html += '<ul id="treeDemo' + i + '" class="ztree"></ul>';
+					html += '</div>';
+
+					html += '</li>';
+				};
+				$('#treeRoot').append(html);
+			}
+		};
+
+		zTreeload()
+		//默认的tree的一级目录展开效果
+		$('#treeRoot').on('click', '.levelRoot>span.button', function() {
+			accordion(this);
+		});
+
+		$('#treeRoot').on('dblclick', 'a.treeA', function() {
+			accordion(this);
+		});
+
+		//阻止树的默认右键事件
+		$('.zTreeDemoBackground').get(0).oncontextmenu = function() {
+			return false;
+		};
+
+		//默认的模版的效果
+		function accordion(that) {
+
+			var treeRootLi = $(that).closest('.levelRoot');
+			var switchBtn = treeRootLi.children('span.switch');
+			var levelA = treeRootLi.children('a').find('span.button');
+			var ulTree = treeRootLi.children('div.zTreeDemoBackground');
+
+			if(!treeRootLi.get(0).flag) {
+				switchBtn.removeClass('noline_close').addClass('noline_open');
+				levelA.removeClass('ico_close').addClass('ico_open');
+				ulTree.slideDown();
+				treeRootLi.get(0).flag = true;
+			} else {
+				switchBtn.addClass('noline_close').removeClass('noline_open');
+				levelA.addClass('ico_close').removeClass('ico_open');
+				ulTree.slideUp();
+				treeRootLi.get(0).flag = false;
+			};
+
+			if($(that).hasClass('treeA')) {
+				$('#treeRoot li a').removeClass('curSelectedNode');
+				$(that).addClass('curSelectedNode');
+			};
+
+			//只能加载一次tree
+			if(!treeRootLi.hasClass('loadOne')) {
+				var index = treeRootLi.index();
+				var inskey = treeRootLi.children('a').data('skey');
+				//加载社保和财政行业
+				loadZTree(inskey, index);
+				treeRootLi.addClass('loadOne');
+			}
+		};
+
+		//加载社保和财政的树
+		function loadZTree(inskey, index) {
+			$.ajax({
+				type: "get",
+				url: "asyncData/json/selectIndustryList.json",
+//				contentType: 'application/json',				
+				dataType: "json",
+				async: false,
+				error: function() {
+					
+				},
+				success: function(data) {
+
+					for(var i = 0; i < data.length; i++) {
+						data[i].inskey = inskey
+					};
+
+					$.fn.zTree.init($("#treeDemo" + index), setting, data);
+				}
+			})
+		};
+
+		/******  目录的右键菜单操作     *****/
+		//新建报表
+		function createTable(type) {
+			var saveFolderId = treeNodeCur.inskey;
+			alert(saveFolderId)
+//			var resultUrl = durl + '/smartbi/vision/createresource.jsp?restype=' + type + '&user=' + window.uname + '&password=' + window.pwd + '&FID=' + saveFolderId;
+//			$('#result').attr("src", resultUrl);
+		};
+		//新增灵活分析
+		$("#flexible").on("click", function() {
+			var type = "simple_report";
+			createTable(type);
+		})
+		//新增多维分析
+		$("#Multidimensional").on("click", function() {
+			var type = "olap_report";
+			createTable(type);
+		})
+		//新增仪表分析
+		$("#Meter").on("click", function() {
+			var type = "meter";
+			createTable(type);
+		})
+		//透视仪表分析
+		$("#perspectiveAnalysis").on("click", function() {
+			var type = "INSIGHT";
+			createTable(type);
+		});
+
+	
+		/***** 模型的右键菜单操作  *****/
+		//查看单个模型
+		$("#menu_check").on("click", function() {
+			lookTable(treeNodeCur);
+		});
+		//修改单个模型
+		$("#menu_modify").on("click", function() {
+			lookTable(treeNodeCur);
+		});
+		//模型提交
+		$("#menu_submitModal").on("click", function() {
+			
+			sbumitWindow(); //加载数据
+		});
+
+		//右键菜单
+		$.fn.Rmenu = function(opt) {
+			var option = {
+				el: opt.el
+			};
+			$('.menu_item').hide();
+			$(this).css({
+				top: option.el.clientY,
+				left: option.el.clientX
+			}).show();
+
+			document.onclick = function() {
+				$('.menu_item').hide();
+			};
+		}
+
+		//双击查看
+		function lookTable(data) {
+			var resid = data.inskey;
+			var resultUrl = durl + '/smartbi/vision/openresource.jsp?resid=' + resid + '&user=' + window.uname + '&password=' + window.pwd;
+			$('#result').attr("src", resultUrl);
+		}
+
+		//双击事件
+		function zTreeOnDblClick(event, treeId, treeNode) {
+			//判断类型 
+			treeNode.isParent || lookTable(treeNode);
+		}
+
+		//tree右键菜单的类型
+		function zTreeOnRightClick(event, treeId, treeNode) {
+			
+			window.treeNodeCur = treeNode;
+			//审计师可以菜单
+			if(treeNode.isOrg == 0) {
+				//目录
+				if(treeNode.isParent) {
+					$('#kuai').Rmenu({
+						el: event
+					});
+				} else {
+					//模型   	   		   
+					$('#kuai2').Rmenu({
+						el: event
+					});
+				}
+			};
+		};
+
+		//单机事件
+		//function zTreeOnClick(event, treeId, treeNode) {
+		//	$('#treeRoot li a').removeClass('curSelectedNode');
+		//	$('#' + treeNode.tId + '>a').addClass('curSelectedNode');
+		//};
+
+		//新增
+		//function add() {
+		//	var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+		//	var newNodes = [{
+		//		name: "newNode1"
+		//	}, {
+		//		name: "newNode2"
+		//	}, {
+		//		name: "newNode3"
+		//	}];
+		//	newNodes = treeObj.addNodes(treeNodeCur, [-1], newNodes);
+		//}
+		//编辑
+		//function editer() {
+		//	var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+		//	treeNodeCur.name = "treeDemo";
+		//	treeObj.updateNode(treeNodeCur);
+		//}
+		//删除
+		//function remove() {
+		//	var treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+		//	var nodes = treeObj.getSelectedNodes();
+		//	treeObj.removeNode(treeNodeCur);
+		//}
+	</script>
+
+</html>

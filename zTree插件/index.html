@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<HTML>
+<HEAD>
+	<TITLE> ZTREE DEMO - Standard Data </TITLE>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" href="css/demo.css" type="text/css">
+	<link rel="stylesheet" href="css/zTreeStyle/zTreeStyle.css" type="text/css">
+	<script type="text/javascript" src="js/jquery-1.4.4.min.js"></script>
+	<script type="text/javascript" src="js/jquery.ztree.core.js"></script>
+	  <script type="text/javascript" src="js/jquery.ztree.excheck.js"></script>
+	  <!--<script type="text/javascript" src="js/jquery.ztree.exedit-3.5.js"></script>-->
+	<SCRIPT type="text/javascript">
+		<!--
+//		var setting = {	
+//			view : { 
+//				blClickExpand : true,  //双击父节点展开
+//				showLine: false,        //是否显示线条
+//				selectedMulti: true
+//			}
+//		 };
+//
+//		var zNodes =[
+//			{ name:"父节点1 - 展开", open:true,
+//				children: [
+//					{ name:"父节点11 - 折叠",
+//						children: [
+//							{ name:"叶子节点111"},
+//							{ name:"叶子节点112"},
+//							{ name:"叶子节点113"},
+//							{ name:"叶子节点114"}
+//						]},
+//					{ name:"父节点12 - 折叠",
+//						children: [
+//							{ name:"叶子节点121"},
+//							{ name:"叶子节点122"},
+//							{ name:"叶子节点123"},
+//							{ name:"叶子节点124"}
+//						]},
+//					{ name:"父节点13 - 没有子节点", isParent:true}
+//				]},
+//			{ name:"父节点2 - 折叠",
+//				children: [
+//					{ name:"父节点21 - 展开", open:true,
+//						children: [
+//							{ name:"叶子节点211"},
+//							{ name:"叶子节点212"},
+//							{ name:"叶子节点213"},
+//							{ name:"叶子节点214"}
+//						]},
+//					{ name:"父节点22 - 折叠",
+//						children: [
+//							{ name:"叶子节点221"},
+//							{ name:"叶子节点222"},
+//							{ name:"叶子节点223"},
+//							{ name:"叶子节点224"}
+//						]},
+//					{ name:"父节点23 - 折叠",
+//						children: [
+//							{ name:"叶子节点231"},
+//							{ name:"叶子节点232"},
+//							{ name:"叶子节点233"},
+//							{ name:"叶子节点234"}
+//						]}
+//				]},
+//			{ name:"父节点3 - 没有子节点", isParent:true}
+//
+//		];
+//
+//		$(document).ready(function(){
+//			$.fn.zTree.init($("#tree"), setting, zNodes);
+//		});
+		//-->
+	</SCRIPT>
+	<script type="text/javascript">
+		var setting = {
+			view : { 
+				blClickExpand : true,  //双击父节点展开
+				showLine: false,        //是否显示线条
+				selectedMulti: true
+			},
+			check: {
+				enable: true,  //节点上显示多选框
+				chkStyle: "checkbox",   //勾选框类型
+				chkboxType:  {"Y" : "ps", "N" : "ps" }  //默认父子关联  选中和取消
+			},
+			callback: {
+				onClick: zTreeOnClick,
+				onRightClick: zTreeOnRightClick
+			},
+			data: {
+				simpleData: {
+					enable: true
+				}
+			}
+		};
+        
+        function zTreeOnClick(treeId, treeNode, clickFlag) {
+        	console.log(treeId, treeNode, clickFlag)
+		};
+         
+        function zTreeOnRightClick(event, treeId, treeNode) {
+        	console.log(event, treeId, treeNode)
+		   
+		};
+		var zNodes =[
+			{ id:1, pId:0, name:"随意勾选 1", open:true, "chkDisabled":true},
+			{ id:11, pId:1, name:"随意勾选 1-1", open:true},
+			{ id:111, pId:11, name:"随意勾选 1-1-1"},
+			{ id:112, pId:11, name:"随意勾选 1-1-2"},
+			{ id:12, pId:1, name:"随意勾选 1-2", open:true},
+			{ id:121, pId:12, name:"随意勾选 1-2-1"},
+			{ id:122, pId:12, name:"随意勾选 1-2-2"},
+			{ id:2, pId:0, name:"随意勾选 2", checked:true, open:true},
+			{ id:21, pId:2, name:"随意勾选 2-1"},
+			{ id:22, pId:2, name:"随意勾选 2-2", open:true},
+			{ id:221, pId:22, name:"随意勾选 2-2-1", checked:true},
+			{ id:222, pId:22, name:"随意勾选 2-2-2"},
+			{ id:23, pId:2, name:"随意勾选 2-3"}
+		];
+		
+	
+		$(document).ready(function(){
+			$.fn.zTree.init($("#treeDemo"), setting, zNodes);
+			
+		});
+	</script>
+</HEAD>
+
+<BODY>
+<div class="content_wrap">
+	<div class="zTreeDemoBackground left">
+		<ul id="treeDemo" class="ztree"></ul>
+	</div>
+	
+	<div id="rMenu" style="top: 161px; left: 93px; visibility: hidden;">
+	<ul>
+		<li id="m_add" onclick="addTreeNode();">增加节点</li>
+		<li id="m_del" onclick="removeTreeNode();">删除节点</li>
+		<li id="m_check" onclick="checkTreeNode(true);">Check节点</li>
+		<li id="m_unCheck" onclick="checkTreeNode(false);">unCheck节点</li>
+		<li id="m_reset" onclick="resetTree();">恢复zTree</li>
+	</ul>
+	
+	<div id="kuai" class="menu_item" style="height: 120px; width: 145px; display: none;">
+			<!--<p>新建</p><img src="img/next.png" style="display:inline;position:absolute;top:6px;right:4px" class="menu_next_btn">-->
+		    <p id="flexibleAnalysis">新建灵活分析报表</p>
+			<p id="ultidimensionalAnalysis">新建多维分析报表</p>
+			<p id="instrumentAnalysis">新建仪表分析报表</p>
+			<p id="perspectiveAnalysis">新建透视分析报表</p>
+		</div>
+</div>
+
+</div>
+</BODY>
+<script type="text/javascript">
+	$.fn.Rmenu=function(opt){
+	     console.log(opt)	
+	}
+	
+//	$(".cont").oncontextmenu = function() {　　
+//			return false;
+//		}
+//	var catalog_menu = document.getElementById('kuai');
+//				var catalog = document.getElementsByClassName("catalog checked");
+//				catalog[0].oncontextmenu = function() {
+//					console.log($(this).attr("data-skey"))
+//					var ev = ev || event
+//					catalog_menu.style.display = 'block'
+//					catalog_menu.style.left = ev.clientX + 'px'
+//					catalog_menu.style.top = ev.clientY + 'px'
+//					return false;
+//				}
+//
+//				document.onclick = function() {
+//					catalog_menu.style.display = 'none';
+//				}
+</script>
+</HTML>

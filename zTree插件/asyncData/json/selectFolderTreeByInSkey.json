@@ -1,0 +1,48 @@
+[
+	{
+		"checked": false,
+		"id": 38,
+		"isOrg": null,
+		"isParent": true,
+		"mfType": 2,
+		"name": "财政资源目录",
+		"open": false,
+		"pid": 40
+	}, {
+		"checked": false,
+		"id": 39,
+		"isOrg": null,
+		"isParent": true,
+		"mfType": 2,
+		"name": "决算资源目录",
+		"open": false,
+		"pid": 40
+	}, {
+		"checked": false,
+		"id": 42,
+		"isOrg": null,
+		"isParent": true,
+		"mfType": 2,
+		"name": "预算目录",
+		"open": false,
+		"pid": 41
+	}, {
+		"checked": false,
+		"id": 174,
+		"isOrg": null,
+		"isParent": true,
+		"mfType": 3,
+		"name": "账户余额表",
+		"open": false,
+		"pid": 38
+	}, {
+		"checked": false,
+		"id": 226,
+		"isOrg": null,
+		"isParent": true,
+		"mfType": 3,
+		"name": "期间余额表",
+		"open": false,
+		"pid": 39
+	}
+]
